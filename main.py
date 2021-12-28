@@ -19,10 +19,10 @@ fps_text = font.render("FPS:" + str(int(fps)), True, white)
 while not done:
     # updates
     deltaTime = clock.tick()/1000
-    fps = clock.get_fps()
-    fps_text = font.render("FPS:" + str(int(fps)), True, white)
-    player.update(deltaTime)
-    for tile in my_map.map:
+    fps = clock.get_fps()   # able to calculate my fps with pygame's clock object
+    fps_text = font.render("FPS:" + str(int(fps)), True, white) #put the fps into my on screen font to be shown on screen
+    player.update(deltaTime)    # be sure to update player
+    for tile in my_map.map:     # iterate through all tiles in map
         if tile.state:
             if player.body[0].pos == tile.pos:
                 my_map.makeFood()

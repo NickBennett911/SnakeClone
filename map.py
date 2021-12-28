@@ -19,10 +19,11 @@ class Map:
                 self.map.append(tile_obj.Tile(x*self.tile_w, y*self.tile_h, False))
 
         bounds = int(self.width/self.tile_w) * int(self.height/self.tile_h)
-        self.i = random.randint(0, bounds)
+        self.i = random.randint(0, bounds)      #index for where the current food tile is
         self.map[self.i].change_state()
 
     def makeFood(self):
+        # Takes the current food tile and toggles it off and finds a new random tile to turn into the food tile
         self.map[self.i].change_state()
         bounds = int(self.width / self.tile_w) * int(self.height / self.tile_h)
         self.i = random.randint(0, bounds-1)
@@ -33,5 +34,6 @@ class Map:
         for tile in self.map:
             tile.draw(surf)
 
+        # display all the map info on screen
         surf.blit(self.created_by, (0, 0))
         surf.blit(self.name, (globs.win_width - self.name.get_width(), 0))

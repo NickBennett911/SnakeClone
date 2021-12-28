@@ -14,7 +14,7 @@ class Player:
         self.body = [tile_obj.Tile(self.pos.x, self.pos.y, False, True, dir),
                      tile_obj.Tile(self.pos.x-globs.tile_w, self.pos.y, False, True, dir),
                      tile_obj.Tile(self.pos.x-(globs.tile_w*2), self.pos.y, False, True, dir)]
-        self.elapsed = 0
+        self.elapsed = 0    #   we move every x number of seconds, this keeps track of that time
         self.directions = []
         self.font = pygame.font.SysFont("Times New Roman", 25)
         self.text = self.font.render("Score: " + str(len(self.body)-3), True, globs.white)
@@ -23,10 +23,10 @@ class Player:
         self.elapsed += dt
         if self.elapsed > globs.move_delay:
             if len(self.directions) > 0:
+                for dir in self.directions: # update the tiles for all the directions given
+                    dir[2] = self.update_tiles(dir[0], dir[1], dir[2])  # returns how many tiles that direction has effected
                 for dir in self.directions:
-                    dir[2] = self.update_tiles(dir[0], dir[1], dir[2])
-                for dir in self.directions:
-                    if len(self.body) == dir[2]:
+                    if len(self.body) == dir[2]:    # if the direction has affected all tiles in snake body then remove that direction from the list
                        self.directions.remove(dir)
 
             # moving tiles based on their own directions
@@ -40,6 +40,7 @@ class Player:
                 elif tile.direction == Player.up:
                     tile.pos.y -= globs.tile_w
 
+                # this sections is responsible for keeping
                 if tile.pos.x >= globs.win_width:
                     tile.pos.x = 0
                 elif tile.pos.x < 0:
@@ -67,8 +68,8 @@ class Player:
         body_len = len(self.body)
         j = tiles_affected
         i = tiles_affected
-        while i < body_len:
-            if self.body[i].pos == position:
+        while i < body_len: # iterate over all our body tiles
+            if self.body[i].pos == position:    # if our body piece is at the poisition of direction change then change its direction
                 self.body[i].direction = dir
                 j += 1
             i += 1
@@ -77,12 +78,12 @@ class Player:
     def grow(self):
         body_len = len(self.body)
         tail_tile = self.body[body_len-1]
-        tail_dir = tail_tile.direction
-        if tail_dir == Player.right:
+        tail_dir = tail_tile.direction  # finds the end body piece as well as the direction that pieces is moving
+        if tail_dir == Player.right:    # if tail is moving right then spawn piece one tile to the left moving in the same direction
             x = tail_tile.pos.x - globs.tile_w
             y = tail_tile.pos.y
             self.body.append(tile_obj.Tile(x, y, False, True, tail_dir))
-        if tail_dir == Player.left:
+        if tail_dir == Player.left:     # repeate proces for first if statement
             x = tail_tile.pos.x + globs.tile_w
             y = tail_tile.pos.y
             self.body.append(tile_obj.Tile(x, y, False, True, tail_dir))
@@ -97,8 +98,9 @@ class Player:
 
     def input(self, evt):
         if evt.type == pygame.KEYDOWN:
+            # if the player pushes A or left arrow
             if evt.key == pygame.K_a or evt.key == pygame.K_LEFT:
-                if self.body[0].direction != Player.right:
+                if self.body[0].direction != Player.right:  # if the player is already moving right we cannot turn left
                     dir = Player.left
                     self.directions.append([self.pos.copy(), dir, 0])
             if evt.key == pygame.K_d or evt.key == pygame.K_RIGHT:
@@ -121,7 +123,7 @@ class Player:
 
     def die(self):
         body_len = len(self.body)-1
-        while body_len > 2:
+        while body_len > 2: # removes all body tiles from list except for first three
             self.body.remove(self.body[body_len])
             body_len -= 1
 
